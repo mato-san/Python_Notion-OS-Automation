@@ -76,7 +76,8 @@ def get_progressbar(total, update_count):
  
     progress.close()
 
-def  write_output_to_file(arb_func):
+# - Optional: write output to file ───────────────────────────────────────────────
+def  write_output_to_file(arb_func, do):
     print("\nWriting output to notion_output.txt...")
 
     buffer = io.StringIO('')
@@ -100,9 +101,33 @@ def  write_output_to_file(arb_func):
     print("Captured output:\n", repr(buffer.getvalue()))
 
     # Write buffer content to file
-    with open("notion_output.txt", "w") as f:
+    with open("notion_output.txt", mode = do) as f:
         f.write(buffer.getvalue().split("\r")[-1])
         f.write("sys.stdout is writable: {_} \n".format(_ = str(sys.stdout.writable())))
+        f.write(today := str(date.today()))
+
+# Function to determine the write mode for the log file ──────────────────────────────────
+def log_once() -> str:
+    do = ""
+    today = str(date.today())
+
+    log_file = "notion_output.txt"
+    # Check if the log file exists and read its content
+    if os.path.exists(log_file):
+        print(f"Log file '{log_file}' exists. Checking last entry...")
+        with open(log_file, "r") as f:
+            last_line = f.readlines()[-1].strip()
+            if today in last_line:
+                do = "w"
+                return do
+            
+            else:
+                do = "a"
+                return do
+    else:
+        print(f"Log file '{log_file}' does not exist. Creating a new one...")
+        logged_dates = []
+        return "w"
  
  
 def main():
@@ -137,13 +162,13 @@ def main():
 
 # Optional: show progress bar if there are many tasks
     get_progressbar(total, update)
-    write_output_to_file(lambda: get_progressbar(total, update))
+    write_output_to_file(lambda: get_progressbar(total, update), do = log_once())
     
  
  
 if __name__ == "__main__":
     main()
-    import os
+    
 
 print("Current working directory:", os.getcwd())
 print("File will be written to:", os.path.abspath("notion_output.txt"))
