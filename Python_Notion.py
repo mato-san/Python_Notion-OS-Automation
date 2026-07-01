@@ -108,26 +108,29 @@ def  write_output_to_file(arb_func, do):
 
 # Function to determine the write mode for the log file ──────────────────────────────────
 def log_once() -> str:
-    do = ""
     today = str(date.today())
-
     log_file = "notion_output.txt"
-    # Check if the log file exists and read its content
+
     if os.path.exists(log_file):
         print(f"Log file '{log_file}' exists. Checking last entry...")
+
         with open(log_file, "r") as f:
-            last_line = f.readlines()[-1].strip()
-            if today in last_line:
-                do = "w"
-                return do
-            
-            else:
-                do = "a"
-                return do
+            lines = f.readlines()
+
+        # Handle empty file
+        if not lines:
+            return "a"
+
+        last_line = lines[-1].strip()
+
+        if today in last_line:
+            return "w"
+        else:
+            return "a"
+
     else:
         print(f"Log file '{log_file}' does not exist. Creating a new one...")
-        logged_dates = []
-        return "w"
+        return "a"
  
  
 def main():
