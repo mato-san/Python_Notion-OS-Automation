@@ -1,6 +1,6 @@
 from turtle import update
-
-import requests, time, sys, io
+import requests, time, sys, io, os
+from datetime import date
 import json
 from tqdm import tqdm
 from collections import defaultdict
@@ -76,11 +76,12 @@ def get_progressbar(total, update_count):
  
     progress.close()
 
-# - Optional: write output to file ───────────────────────────────────────────────
-def  write_output_to_file(arb_func, do):
+# - Optional: write output to file
+def  write_output_to_file(arb_func, today : str = str(date.today())) -> str:
     print("\nWriting output to notion_output.txt...")
 
     buffer = io.StringIO('')
+    content = ""
 
     #change standard output to buffer
     old_stdout = sys.stdout
@@ -99,14 +100,39 @@ def  write_output_to_file(arb_func, do):
         sys.stderr = old_stderr
 
     print("Captured output:\n", repr(buffer.getvalue()))
+    content = (today + " - " + (buffer.getvalue().split("\r")[-1]).replace("#", "█"))
+    return content
 
-    # Write buffer content to file
-    with open("notion_output.txt", mode = do) as f:
-        f.write(buffer.getvalue().split("\r")[-1])
-        f.write("sys.stdout is writable: {_} \n".format(_ = str(sys.stdout.writable())))
-        f.write(today := str(date.today()))
 
-# Function to determine the write mode for the log file ──────────────────────────────────
+
+
+def update_log_file(content) -> None:
+    today = str(date.today())
+    LOG_FILE = "notion_output.txt"
+
+    lines = []
+    if os.path.exists(LOG_FILE):
+        with open(LOG_FILE, "r") as f:
+            lines = f.readlines()
+
+    update = False
+
+    for i, line in enumerate(lines):
+        if line.startswith(today):
+            lines[i]  = f"{today} - {content}\n"
+            update  = True
+            break
+
+    if not update:
+        lines.append(f"{today} - {content}\n")
+
+    with open(LOG_FILE, "w", encoding='utf-8') as f:
+        f.writelines(lines)
+        f.write(" :: sys.stdout is writable: {_} \n".format(_ = str(sys.stdout.writable())))
+
+
+# Function to determine the write mode for the log file
+
 def log_once() -> str:
     today = str(date.today())
     log_file = "notion_output.txt"
@@ -165,7 +191,8 @@ def main():
 
 # Optional: show progress bar if there are many tasks
     get_progressbar(total, update)
-    write_output_to_file(lambda: get_progressbar(total, update), do = log_once())
+    bol = write_output_to_file(lambda: get_progressbar(total, update))
+    update_log_file(bol)
     
  
  
@@ -175,4 +202,6 @@ if __name__ == "__main__":
 
 print("Current working directory:", os.getcwd())
 print("File will be written to:", os.path.abspath("notion_output.txt"))
+
+
 
