@@ -1,3 +1,4 @@
+
 from turtle import update
 import requests, time, sys, io, os
 from datetime import date
@@ -100,7 +101,8 @@ def  write_output_to_file(arb_func, today : str = str(date.today())) -> str:
         sys.stderr = old_stderr
 
     print("Captured output:\n", repr(buffer.getvalue()))
-    content = (today + " - " + (buffer.getvalue().split("\r")[-1]).replace("#", "█"))
+    content = (" :: sys.stdout is writable: {_} \n".format(_ = str(sys.stdout.writable())) + "\n" +
+               today + " - " + (buffer.getvalue().split("\r")[-1]).replace("#", "█") )
     return content
 
 
@@ -112,23 +114,23 @@ def update_log_file(content) -> None:
 
     lines = []
     if os.path.exists(LOG_FILE):
-        with open(LOG_FILE, "r") as f:
+        with open(LOG_FILE, "r", encoding='utf-8') as f:
             lines = f.readlines()
 
     update = False
 
     for i, line in enumerate(lines):
         if line.startswith(today):
-            lines[i]  = f"{today} - {content}\n"
+            lines[i]  = f"{content}\n"
             update  = True
             break
 
     if not update:
-        lines.append(f"{today} - {content}\n")
+        lines.append(f"{content}\n")
 
     with open(LOG_FILE, "w", encoding='utf-8') as f:
         f.writelines(lines)
-        f.write(" :: sys.stdout is writable: {_} \n".format(_ = str(sys.stdout.writable())))
+       
 
 
 # Function to determine the write mode for the log file
@@ -202,6 +204,4 @@ if __name__ == "__main__":
 
 print("Current working directory:", os.getcwd())
 print("File will be written to:", os.path.abspath("notion_output.txt"))
-
-
 
