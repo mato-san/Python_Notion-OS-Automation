@@ -321,6 +321,6 @@ MIT License
 
 Psalm Yoseff C. Aguilar
 
-Centro Escolar Integrated School (CEIS)
+University of Santo Thomas
 
-STEM Research / Embedded Systems / Python Development
+IS Research / Embedded Systems / Python Development
