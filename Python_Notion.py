@@ -68,7 +68,7 @@ def extract_status(page: dict) -> dict:
     return {"task": task_name, "status": status_value}
 
 # ── PROGRESS BAR (OPTIONAL) ───────────────────────────────────────────────
-def get_progressbar(total, update_count):
+ef get_progressbar(total, update_count):
     progress = tqdm(total = total, desc = "Task Progress Percentage")
     update_count = update_count
     for _ in range(int(update_count)):
@@ -100,9 +100,9 @@ def  write_output_to_file(arb_func, today : str = str(date.today())) -> str:
         sys.stdout = old_stdout
         sys.stderr = old_stderr
 
+    progress = (buffer.getvalue().split("\r")[-1]).replace("#", "█")
     print("Captured output:\n", repr(buffer.getvalue()))
-    content = (" :: sys.stdout is writable: {_} \n".format(_ = str(sys.stdout.writable())) + "\n" +
-               today + " - " + (buffer.getvalue().split("\r")[-1]).replace("#", "█") )
+    content = (f"{today} - {progress}" + f" :: sys.stdout is writable: {str(sys.stdout.writable())} \n")
     return content
 
 
@@ -110,18 +110,24 @@ def  write_output_to_file(arb_func, today : str = str(date.today())) -> str:
 
 def update_log_file(content) -> None:
     today = str(date.today())
-    LOG_FILE = "notion_output.txt"
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+    LOG_FILE = os.path.join(SCRIPT_DIR, "notion_output.txt")
 
-    lines = []
+    #read existing lines from the log file if it exists, otherwise start with an empty list
     if os.path.exists(LOG_FILE):
         with open(LOG_FILE, "r", encoding='utf-8') as f:
-            lines = f.readlines()
+            text = f.read()
+
+    else:
+        text = ""
+
+    lines = [e for e in text.split("\n\n") if e.strip()]
 
     update = False
 
     for i, line in enumerate(lines):
         if line.startswith(today):
-            lines[i]  = f"{content}\n"
+            lines[i]  = f"{content}\n" 
             update  = True
             break
 
@@ -129,36 +135,11 @@ def update_log_file(content) -> None:
         lines.append(f"{content}\n")
 
     with open(LOG_FILE, "w", encoding='utf-8') as f:
-        f.writelines(lines)
+        f.writelines("\n\n".join(lines))
        
 
 
 # Function to determine the write mode for the log file
-
-def log_once() -> str:
-    today = str(date.today())
-    log_file = "notion_output.txt"
-
-    if os.path.exists(log_file):
-        print(f"Log file '{log_file}' exists. Checking last entry...")
-
-        with open(log_file, "r") as f:
-            lines = f.readlines()
-
-        # Handle empty file
-        if not lines:
-            return "a"
-
-        last_line = lines[-1].strip()
-
-        if today in last_line:
-            return "w"
-        else:
-            return "a"
-
-    else:
-        print(f"Log file '{log_file}' does not exist. Creating a new one...")
-        return "a"
  
  
 def main():
@@ -204,4 +185,5 @@ if __name__ == "__main__":
 
 print("Current working directory:", os.getcwd())
 print("File will be written to:", os.path.abspath("notion_output.txt"))
+print("Script directory:", os.path.dirname(os.path.abspath(__file__)))
 
