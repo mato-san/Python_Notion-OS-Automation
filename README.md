@@ -324,3 +324,40 @@ Psalm Yoseff C. Aguilar
 University of Santo Thomas
 
 IS Research / Embedded Systems / Python Development
+
+# Python System Tray Launcher
+
+A simple Python system tray application that runs in the background and allows you to launch another Python script from the tray menu.
+
+## Features
+
+- Runs in the Windows system tray
+- Launches `Notion_Python.py` from the menu
+- Prevents multiple instances of the script
+- Quit option to close the application
+
+## Requirements
+
+```bash
+pip install pystray pillow
+```
+
+## Usage
+
+Run the application:
+
+```bash
+python tray_app.py
+```
+
+Right-click the tray icon and select:
+
+- **Run Database Sync** – Starts `Notion_Python.py`
+- **Quit** – Closes the tray application
+
+## Files
+
+```
+tray_app.py          # System tray application
+Notion_Python.py     # Script launched from the tray
+```
