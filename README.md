@@ -359,5 +359,5 @@ Right-click the tray icon and select:
 
 ```
 tray_app.py          # System tray application
-Notion_Python.py     # Script launched from the tray
+Python_Notion.py     # Script launched from the tray
 ```
