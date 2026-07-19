@@ -350,6 +350,9 @@ Run the application:
 python tray_app.py
 ```
 
+<img width="576" height="40" alt="image" src="https://github.com/user-attachments/assets/4c1e27a6-59a7-445e-8259-2a6e217263cc" />
+
+
 Right-click the tray icon and select:
 
 - **Run Database Sync** – Starts `Notion_Python.py`
