@@ -349,10 +349,6 @@ Run the application:
 ```bash
 python PyNot_app.py
 ```
-## Python-notion Application
-
-A simple application without the requirement of opening bash or any integral coding environment.
-<img width="576" height="40" alt="image" src="https://github.com/user-attachments/assets/4c1e27a6-59a7-445e-8259-2a6e217263cc" />
 
 
 Right-click the tray icon and select:
